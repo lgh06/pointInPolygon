@@ -1,28 +1,5 @@
 // https://lbs.qq.com/tool/getpoint/get-point.html
 
-// 多边形的点是有顺序的 连续的 不能跳跃
-var zhengZhouRingThree = [
-    // 34.809857,113.597946
-    // 最左上角
-    {lat: 34.809857, lng: 113.597946},
-    // 34.799709,113.780937
-    // 最右上角
-    {lat:34.799709,lng:113.780937},
-    
-    // 34.704082,113.777504
-    // 最右下角
-    {lat:34.704082,lng:113.777504},
-
-    // 34.699848,113.619576
-    // 最左下角 靠右下
-    {lat:34.699848,lng:113.619576},
-
-    // 34.731738,113.585243
-    // 最左下角 靠左上
-    {lat:34.731738,lng:113.585243},
-
-]
-
 var isPointInPolygon = function(point,pts){
     var N = pts.length;  //pts [{lat:xxx,lng:xxx},{lat:xxx,lng:xxx}]
     var boundOrVertex = true; //如果点位于多边形的顶点或边上，也算做点在多边形内，直接返回true
@@ -81,16 +58,66 @@ var isPointInPolygon = function(point,pts){
     }
 };
 
-var isPointInZhengZhouRingThree = function(point){
-    return isPointInPolygon(point,zhengZhouRingThree)
+// 多边形的点是有顺序的 连续的 不能跳跃
+var zhengZhouRingThree = [
+    // 34.809857,113.597946
+    // 最左上角
+    {lat: 34.809857, lng: 113.597946},
+    // 34.799709,113.780937
+    // 最右上角
+    {lat:34.799709,lng:113.780937},
+    
+    // 34.704082,113.777504
+    // 最右下角
+    {lat:34.704082,lng:113.777504},
+
+    // 34.699848,113.619576
+    // 最左下角 靠右下
+    {lat:34.699848,lng:113.619576},
+
+    // 34.731738,113.585243
+    // 最左下角 靠左上
+    {lat:34.731738,lng:113.585243},
+
+]
+
+var zhengZhouRingFour = [
+    {lat:34.887057,lng:113.529625}, // 左上
+    {lat:34.851566,lng:113.816299}, // 又上
+    {lat:34.710574,lng:113.812180}, // 右下
+    {lat:34.663711,lng:113.606873}, // 左下 下
+    {lat:34.698719,lng:113.594513}, // 坐下 中
+    {lat:34.696743,lng:113.540955}, // 左下 左
+
+];
+
+var isPointInZhengZhouRingX = function(point){
+    // 先判断是否在3环内 如果在3环内 则一定在4环内
+    if(isPointInPolygon(point,zhengZhouRingThree)){
+        return 3
+    }
+    // 再判断是否在4环内
+    if(isPointInPolygon(point,zhengZhouRingFour)){
+        return 4
+    }
+    return 9;
 }
 
 // below are test cases
 // delete below in production
+console.log("below is 3 ring test")
 var point1 = {lat:34.755717,lng:113.750038}
 var point2 = {lat:34.704929,lng:113.590736}
 var point3 = {lat:34.714242,lng:113.609962}
 
-console.log(isPointInZhengZhouRingThree(point1))
-console.log(isPointInZhengZhouRingThree(point2))
-console.log(isPointInZhengZhouRingThree(point3))
+console.log(isPointInZhengZhouRingX(point1))
+console.log(isPointInZhengZhouRingX(point2))
+console.log(isPointInZhengZhouRingX(point3))
+
+console.log("below is 4 ring test")
+
+var point4 = {lat:34.685169,lng:113.580093}
+var point5 = {lat:34.721297,lng:113.562241}
+console.log(isPointInZhengZhouRingX(point4))
+console.log(isPointInZhengZhouRingX(point5))
+
