@@ -61,6 +61,19 @@ var isPointInPolygon = function (point, pts) {
 // 多边形的点是有顺序的 连续的 不能跳跃
 const RingData = {
   zhengzhou: {
+    // 农业 未来 航海 桐柏
+    two:[
+      {lat:34.787867,lng:113.646698},// 左上 农业 丰乐
+      {lat:34.786457,lng:113.707638},
+      {lat:34.786457,lng:113.707638},
+      {lat:34.762134,lng:113.704290},
+      {lat:34.733078,lng:113.704462},
+      {lat:34.728916,lng:113.706350},
+      {lat:34.720945,lng:113.706350}, // 右下 航海 未来
+      {lat:34.720945,lng:113.613610}, // 左下 航海 桐柏
+      {lat:34.760671,lng:113.613546}, // 锦艺城 十字
+      {lat:34.774861,lng:113.618631}, // 桐柏 农业
+    ],
     three: [
       // 最左上角
       { lat: 34.809857, lng: 113.597946 },
@@ -85,7 +98,11 @@ const RingData = {
 }
 
 var isPointInZhengZhouRingX = function (point) {
-  // 先判断是否在3环内 如果在3环内 则一定在4环内
+  // 先判断是否在2环内
+  if (isPointInPolygon(point, RingData.zhengzhou.two)) {
+    return 2
+  }
+  // 先判断是否在3环内
   if (isPointInPolygon(point, RingData.zhengzhou.three)) {
     return 3
   }
@@ -95,6 +112,14 @@ var isPointInZhengZhouRingX = function (point) {
   }
   return 9;
 }
+
+
+
+
+
+
+
+
 
 // below are test cases
 // delete below in production
@@ -113,4 +138,10 @@ var point4 = { lat: 34.685169, lng: 113.580093 }
 var point5 = { lat: 34.721297, lng: 113.562241 }
 console.log(isPointInZhengZhouRingX(point4))
 console.log(isPointInZhengZhouRingX(point5))
+
+console.log("below is 2 ring test")
+var point6 = {lat:34.784060,lng:113.648071}
+var point7 = {lat:34.789347,lng:113.644209}
+console.log(isPointInZhengZhouRingX(point6));
+console.log(isPointInZhengZhouRingX(point7));
 
