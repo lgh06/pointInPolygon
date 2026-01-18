@@ -1,5 +1,11 @@
 // https://lbs.qq.com/tool/getpoint/get-point.html
 
+import { 
+  zhengzhou2ring, 
+  zhengzhou3ring, 
+  zhengzhou4ring,
+} from "./data/index";
+
 var isPointInPolygon = function (point, pts) {
   var N = pts.length;  //pts [{lat:xxx,lng:xxx},{lat:xxx,lng:xxx}]
   var boundOrVertex = true; //如果点位于多边形的顶点或边上，也算做点在多边形内，直接返回true
@@ -59,55 +65,17 @@ var isPointInPolygon = function (point, pts) {
 };
 
 // 多边形的点是有顺序的 连续的 不能跳跃
-const RingData = {
-  zhengzhou: {
-    // 农业 未来 航海 桐柏
-    two:[
-      {lat:34.787867,lng:113.646698},// 左上 农业 丰乐
-      {lat:34.786457,lng:113.707638},
-      {lat:34.786457,lng:113.707638},
-      {lat:34.762134,lng:113.704290},
-      {lat:34.733078,lng:113.704462},
-      {lat:34.728916,lng:113.706350},
-      {lat:34.720945,lng:113.706350}, // 右下 航海 未来
-      {lat:34.720945,lng:113.613610}, // 左下 航海 桐柏
-      {lat:34.760671,lng:113.613546}, // 锦艺城 十字
-      {lat:34.774861,lng:113.618631}, // 桐柏 农业
-    ],
-    three: [
-      // 最左上角
-      { lat: 34.809857, lng: 113.597946 },
-      // 最右上角
-      { lat: 34.799709, lng: 113.780937 },
-      // 最右下角
-      { lat: 34.704082, lng: 113.777504 },
-      // 最左下角 靠右下
-      { lat: 34.699848, lng: 113.619576 },
-      // 最左下角 靠左上
-      { lat: 34.731738, lng: 113.585243 },
-    ],
-    four: [
-      { lat: 34.887057, lng: 113.529625 }, // 左上
-      { lat: 34.851566, lng: 113.816299 }, // 又上
-      { lat: 34.710574, lng: 113.812180 }, // 右下
-      { lat: 34.663711, lng: 113.606873 }, // 左下 下
-      { lat: 34.698719, lng: 113.594513 }, // 坐下 中
-      { lat: 34.696743, lng: 113.540955 }, // 左下 左
-    ],
-  }
-}
-
 var isPointInZhengZhouRingX = function (point) {
   // 先判断是否在2环内
-  if (isPointInPolygon(point, RingData.zhengzhou.two)) {
+  if (isPointInPolygon(point, zhengzhou2ring)) {
     return 2
   }
   // 先判断是否在3环内
-  if (isPointInPolygon(point, RingData.zhengzhou.three)) {
+  if (isPointInPolygon(point, zhengzhou3ring)) {
     return 3
   }
   // 再判断是否在4环内
-  if (isPointInPolygon(point, RingData.zhengzhou.four)) {
+  if (isPointInPolygon(point, zhengzhou4ring)) {
     return 4
   }
   return 9;

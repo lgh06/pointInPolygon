@@ -1,0 +1,21 @@
+{
+  "name": "pointinpolygon",
+  "version": "1.0.0",
+  "description": "本目录包含一个用于判断点是否在多边形内的JavaScript实现。该实现采用了经典的**射线法**(Ray Casting Algorithm)来解决地理空间中的点与多边形关系判断问题。",
+  "main": "pointInPolygon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type":"module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgh06/pointInPolygon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lgh06/pointInPolygon/issues"
+  },
+  "homepage": "https://github.com/lgh06/pointInPolygon#readme"
+}
