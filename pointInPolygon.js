@@ -4,7 +4,7 @@ import {
   zhengzhou2ring, 
   zhengzhou3ring, 
   zhengzhou4ring,
-} from "./data/index";
+} from "./data/index.js";
 
 var isPointInPolygon = function (point, pts) {
   var N = pts.length;  //pts [{lat:xxx,lng:xxx},{lat:xxx,lng:xxx}]
