@@ -113,3 +113,5 @@ var point7 = {lat:34.789347,lng:113.644209}
 console.log(isPointInZhengZhouRingX(point6));
 console.log(isPointInZhengZhouRingX(point7));
 
+
+export { isPointInPolygon, isPointInZhengZhouRingX }
