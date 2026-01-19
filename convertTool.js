@@ -1,0 +1,140 @@
+// https://www.jianshu.com/p/899b91031ea0
+
+// https://github.com/tomiaa12/blog/blob/main/src/docs/%E6%96%87%E7%AB%A0/JS%20Lib/%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%EF%BC%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%EF%BC%8C%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%EF%BC%8C%E5%A4%A9%E5%9C%B0%E5%9B%BE%E7%AD%89%E5%9D%90%E6%A0%87%E4%BA%92%E8%BD%AC.md
+// or npm @tomiaa/coordinate-transform
+
+//转换常数
+const x_pi = 3.14159265358979324 * 3000.0 / 180.0
+const pi = 3.14159265358979324
+const a = 6378245.0
+const ee = 0.00669342162296594323
+
+function transformLon(x, y) {
+    var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+    ret += (20.0 * Math.sin(6.0 * x * this.pi) + 20.0 * Math.sin(2.0 * x * this.pi)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(x * this.pi) + 40.0 * Math.sin(x / 3.0 * this.pi)) * 2.0 / 3.0;
+    ret += (150.0 * Math.sin(x / 12.0 * this.pi) + 300.0 * Math.sin(x / 30.0 * this.pi)) * 2.0 / 3.0;
+    return ret;
+}
+
+function transformLat(x, y) {
+    var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+    ret += (20.0 * Math.sin(6.0 * x * this.pi) + 20.0 * Math.sin(2.0 * x * this.pi)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(y * this.pi) + 40.0 * Math.sin(y / 3.0 * this.pi)) * 2.0 / 3.0;
+    ret += (160.0 * Math.sin(y / 12.0 * this.pi) + 320 * Math.sin(y * this.pi / 30.0)) * 2.0 / 3.0;
+    return ret;
+}
+// 判断是否在国内
+function outOfChina(lat, lon) {
+    if (lon < 72.004 || lon > 137.8347)
+        return true;
+    if (lat < 0.8293 || lat > 55.8271)
+        return true;
+    return false;
+}
+
+/* 
+ WGS-84转换GCJ-02
+（即 天地图转高德、腾讯地图）
+ */
+export const wgs_gcj_encrypts = (latlons) => {
+    var point = [];
+    for (const latlon of latlons) {
+        if (this.outOfChina(latlon.lat, latlon.lng)) {
+            point.push({
+                lat: latlon.lat,
+                lng: latlon.lng
+            })
+            return point;
+        }
+        var dLat = this.transformLat(latlon.lng - 105.0, latlon.lat - 35.0);
+        var dLon = this.transformLon(latlon.lng - 105.0, latlon.lat - 35.0);
+        var radLat = latlon.lat / 180.0 * this.pi;
+        var magic = Math.sin(radLat);
+        magic = 1 - this.ee * magic * magic;
+        var sqrtMagic = Math.sqrt(magic);
+        dLat = (dLat * 180.0) / ((this.a * (1 - this.ee)) / (magic * sqrtMagic) * this.pi);
+        dLon = (dLon * 180.0) / (this.a / sqrtMagic * Math.cos(radLat) * this.pi);
+        var lat = latlon.lat + dLat;
+        var lng = latlon.lng + dLon;
+        point.push({
+            lat: lat,
+            lng: lng
+        })
+    }
+    return point;
+}
+
+/* 
+ BD-09转换GCJ-02
+ （即 百度转高德、腾讯地图）
+ */
+export const bd_google_encrypt = (latlons) => {
+    var point = [];
+    for (const latlon of latlons) {
+        var x = latlon.lng - 0.0065;
+        var y = latlon.lat - 0.006;
+        var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * this.x_pi);
+        var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * this.x_pi);
+        var gg_lon = z * Math.cos(theta);
+        var gg_lat = z * Math.sin(theta);
+        point.push({
+            lat: gg_lon,
+            lng: gg_lat
+        })
+    }
+    return point;
+}
+
+/* 
+ GCJ-02转换BD-09
+ （即 高德、腾讯转百度地图）
+ */
+export const google_bd_encrypt = (latlons) => {
+    var point = [];
+    for (const latlon of latlons) {
+        var x = latlon.lng;
+        var y = latlon.lat;
+        var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * this.x_pi);
+        var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * this.x_pi);
+        var bd_lon = z * Math.cos(theta) + 0.0065;
+        var bd_lat = z * Math.sin(theta) + 0.006;
+        point.push({
+            lat: bd_lat,
+            lng: bd_lon
+        })
+    }
+    return point;
+}
+
+/* 
+ GCJ-02 到 WGS-84 的转换
+ （即 高德、腾讯转天地图）
+ */
+export const gcj_wgs_encrypts = (latlons) => {
+    var point = [];
+    for (const latlon of latlons) {
+        if (this.outOfChina(latlon.lat, latlon.lng)) {
+            point.push({
+                lat: latlon.lat,
+                lng: latlon.lng
+            })
+            return point;
+        }
+        var dLat = this.transformLat(latlon.lng - 105.0, latlon.lat - 35.0);
+        var dLon = this.transformLon(latlon.lng - 105.0, latlon.lat - 35.0);
+        var radLat = latlon.lat / 180.0 * this.pi;
+        var magic = Math.sin(radLat);
+        magic = 1 - this.ee * magic * magic;
+        var sqrtMagic = Math.sqrt(magic);
+        dLat = (dLat * 180.0) / ((this.a * (1 - this.ee)) / (magic * sqrtMagic) * this.pi);
+        dLon = (dLon * 180.0) / (this.a / sqrtMagic * Math.cos(radLat) * this.pi);
+        var lat = dLat;
+        var lng = dLon;
+        point.push({
+            lat: lat,
+            lng: lng
+        })
+    }
+    return point;
+}
